@@ -2,17 +2,26 @@
 import { useImsStore } from '../composables/useImsStore'
 import PageHeader from '../components/PageHeader.vue'
 
-const { categories, batchFreight, purchaseRows, addPurchaseRow, removePurchaseRow, submitPurchase } = useImsStore()
+const {
+  categories,
+  batchFreight,
+  purchaseRows,
+  productTemplates,
+  addPurchaseRow,
+  removePurchaseRow,
+  applyProductTemplateToRow,
+  submitPurchase,
+} = useImsStore()
 </script>
 
 <template>
   <div>
-  <PageHeader
-    eyebrow="Purchase"
-    title="进货入仓"
-    description="录入本次进货商品、折扣和货拉拉价格。"
-    :breadcrumb="['首页', '进货入仓']"
-  >
+    <PageHeader
+      eyebrow="Purchase"
+      title="进货入仓"
+      description="录入本次进货商品、套用品名模板并填写货拉拉价格。"
+      :breadcrumb="['首页', '进货入仓']"
+    >
     <template #actions>
       <button class="secondary-btn" type="button" @click="addPurchaseRow">
         <span class="btn-icon">+</span>
@@ -48,6 +57,18 @@ const { categories, batchFreight, purchaseRows, addPurchaseRow, removePurchaseRo
           <span>品名</span>
           <input v-model="row.name" type="text" maxlength="50" placeholder="请输入品名" />
         </label>
+        <div class="row-tools">
+          <span class="row-tools-label">品名模板</span>
+          <div class="row-tools-actions">
+            <select v-if="productTemplates.length" @change="applyProductTemplateToRow(row, productTemplates.find((item) => item.id === $event.target.value)); $event.target.value = ''">
+              <option value="">套用品名模板</option>
+              <option v-for="template in productTemplates" :key="template.id" :value="template.id">
+                {{ template.name }} / {{ template.category }}
+              </option>
+            </select>
+            <span v-else class="row-tools-empty">请先到左侧“品名管理”新增模板</span>
+          </div>
+        </div>
         <label>
           <span>原价</span>
           <input v-model="row.originalPrice" type="number" min="0" step="0.01" placeholder="0.00" />

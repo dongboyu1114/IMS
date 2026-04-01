@@ -359,10 +359,115 @@ label {
 
 .purchase-row {
   display: grid;
-  grid-template-columns: 1.05fr 1.35fr 1fr 1fr 1fr auto;
+  grid-template-columns: 1.05fr 1.35fr 1.15fr 1fr 1fr 1fr auto;
   gap: 14px;
   align-items: end;
   padding: 18px;
+}
+
+.template-panel {
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.template-manager-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.template-form-panel,
+.template-list-panel {
+  padding: 18px;
+}
+
+.template-form-panel h3 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.template-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.template-form-actions {
+  margin-top: 16px;
+}
+
+.no-margin-top {
+  margin-top: 0;
+}
+
+.template-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.template-panel-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.template-panel-tip {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.template-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.template-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.template-card-copy strong,
+.template-card-copy span {
+  display: block;
+}
+
+.template-card-copy span {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.row-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row-tools-label {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.row-tools-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row-tools-empty {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .flat-subpanel {
@@ -720,6 +825,7 @@ tbody tr:hover {
   .grid-layout,
   .stats-strip,
   .detail-summary-grid,
+  .template-manager-grid,
   .filters-grid-flat,
   .purchase-row,
   .shipment-toolbar-flat {

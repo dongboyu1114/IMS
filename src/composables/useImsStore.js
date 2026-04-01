@@ -8,6 +8,7 @@ const STATE_ROW_ID = 'main'
 
 const products = ref(persisted.products)
 const shipments = ref(persisted.shipments)
+const productTemplates = ref([])
 const shippingFee = ref('')
 const selectedPendingIds = ref([])
 const batchFreight = ref('')
@@ -22,7 +23,7 @@ const filters = reactive({
 const purchaseRows = ref([createPurchaseRow()])
 
 watch(
-  [products, shipments],
+  [products, shipments, productTemplates],
   () => {
     if (!isStoreReady.value) {
       return
@@ -39,7 +40,7 @@ watch(
 async function loadRemoteState() {
   const { data, error } = await supabase
     .from('app_state')
-    .select('products, shipments')
+    .select('products, shipments, product_templates')
     .eq('id', STATE_ROW_ID)
     .maybeSingle()
 
@@ -53,6 +54,7 @@ async function loadRemoteState() {
       id: STATE_ROW_ID,
       products: [],
       shipments: [],
+      product_templates: [],
     })
 
     if (insertError) {
@@ -61,12 +63,14 @@ async function loadRemoteState() {
 
     products.value = []
     shipments.value = []
+    productTemplates.value = []
     isStoreReady.value = true
     return
   }
 
   products.value = Array.isArray(data.products) ? data.products : []
   shipments.value = Array.isArray(data.shipments) ? data.shipments : []
+  productTemplates.value = Array.isArray(data.product_templates) ? data.product_templates : []
   isStoreReady.value = true
 }
 
@@ -77,6 +81,7 @@ async function persistState() {
       id: STATE_ROW_ID,
       products: products.value,
       shipments: shipments.value,
+      product_templates: productTemplates.value,
       updated_at: new Date().toISOString(),
     })
 
@@ -155,6 +160,69 @@ function removePurchaseRow(index) {
     return
   }
   purchaseRows.value.splice(index, 1)
+}
+
+function upsertProductTemplate(payload) {
+  const name = String(payload.name || '').trim()
+  const originalPrice = Number(payload.originalPrice)
+  const discountRate = Number(payload.discountRate)
+
+  if (!name) {
+    alert('请输入品名模板名称。')
+    return false
+  }
+  if (Number.isNaN(originalPrice) || originalPrice < 0) {
+    alert('请输入有效的默认原价。')
+    return false
+  }
+  if (!validateDiscount(discountRate)) {
+    alert('默认折扣比例必须在 0 到 1 之间，且最多三位小数。')
+    return false
+  }
+
+  const nextTemplate = {
+    id: payload.id || createId('template'),
+    category: payload.category || categories[0],
+    name,
+    originalPrice,
+    discountRate,
+  }
+
+  const currentIndex = productTemplates.value.findIndex((item) => item.id === nextTemplate.id)
+  const duplicateIndex = productTemplates.value.findIndex((item) => item.name === name && item.id !== nextTemplate.id)
+
+  if (duplicateIndex >= 0) {
+    alert('该品名模板已存在，请直接编辑。')
+    return false
+  }
+
+  if (currentIndex >= 0) {
+    productTemplates.value.splice(currentIndex, 1, nextTemplate)
+  } else {
+    productTemplates.value.unshift(nextTemplate)
+  }
+
+  return true
+}
+
+function saveProductTemplateFromRow(row) {
+  return upsertProductTemplate({
+    category: row.category,
+    name: row.name,
+    originalPrice: row.originalPrice,
+    discountRate: row.discountRate || 1,
+  })
+}
+
+function applyProductTemplateToRow(row, template) {
+  row.category = template.category
+  row.name = template.name
+  row.originalPrice = template.originalPrice
+  row.discountRate = template.discountRate
+}
+
+function deleteProductTemplate(id) {
+  productTemplates.value = productTemplates.value.filter((item) => item.id !== id)
 }
 
 function submitPurchase() {
@@ -358,6 +426,7 @@ export function useImsStore() {
     categories,
     products,
     shipments,
+    productTemplates,
     shippingFee,
     isStoreReady,
     selectedPendingIds,
@@ -371,6 +440,10 @@ export function useImsStore() {
     sortedShipments,
     addPurchaseRow,
     removePurchaseRow,
+    upsertProductTemplate,
+    saveProductTemplateFromRow,
+    applyProductTemplateToRow,
+    deleteProductTemplate,
     submitPurchase,
     startEdit,
     cancelEdit,

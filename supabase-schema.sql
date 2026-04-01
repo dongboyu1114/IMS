@@ -2,11 +2,15 @@ create table if not exists public.app_state (
   id text primary key,
   products jsonb not null default '[]'::jsonb,
   shipments jsonb not null default '[]'::jsonb,
+  product_templates jsonb not null default '[]'::jsonb,
   updated_at timestamptz not null default now()
 );
 
-insert into public.app_state (id, products, shipments)
-values ('main', '[]'::jsonb, '[]'::jsonb)
+alter table public.app_state
+add column if not exists product_templates jsonb not null default '[]'::jsonb;
+
+insert into public.app_state (id, products, shipments, product_templates)
+values ('main', '[]'::jsonb, '[]'::jsonb, '[]'::jsonb)
 on conflict (id) do nothing;
 
 alter table public.app_state enable row level security;

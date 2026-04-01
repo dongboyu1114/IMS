@@ -6,6 +6,7 @@ const { stats } = useImsStore()
 
 const navItems = [
   { name: 'dashboard', label: '总览' },
+  { name: 'product-templates', label: '品名管理' },
   { name: 'purchase', label: '进货入仓' },
   { name: 'inventory', label: '库存列表' },
   { name: 'pending', label: '待发货' },

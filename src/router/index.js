@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import DashboardView from '../views/DashboardView.vue'
+import ProductTemplatesView from '../views/ProductTemplatesView.vue'
 import PurchaseView from '../views/PurchaseView.vue'
 import InventoryView from '../views/InventoryView.vue'
 import PendingView from '../views/PendingView.vue'
@@ -23,6 +24,11 @@ const router = createRouter({
           path: 'purchase',
           name: 'purchase',
           component: PurchaseView,
+        },
+        {
+          path: 'product-templates',
+          name: 'product-templates',
+          component: ProductTemplatesView,
         },
         {
           path: 'inventory',
