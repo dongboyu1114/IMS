@@ -1,0 +1,78 @@
+<script setup>
+import { useImsStore } from '../composables/useImsStore'
+import PageHeader from '../components/PageHeader.vue'
+
+const { categories, batchFreight, purchaseRows, addPurchaseRow, removePurchaseRow, submitPurchase } = useImsStore()
+</script>
+
+<template>
+  <div>
+  <PageHeader
+    eyebrow="Purchase"
+    title="进货入仓"
+    description="录入本次进货商品、折扣和货拉拉价格。"
+    :breadcrumb="['首页', '进货入仓']"
+  >
+    <template #actions>
+      <button class="secondary-btn" type="button" @click="addPurchaseRow">
+        <span class="btn-icon">+</span>
+        <span>新增商品</span>
+      </button>
+    </template>
+  </PageHeader>
+
+  <section class="panel panel-wide flat-panel">
+    <div class="panel-header panel-header-tight">
+      <div class="section-title-group">
+        <p class="section-tag">Purchase</p>
+        <h2>进货入仓</h2>
+      </div>
+    </div>
+
+    <div class="shared-fields single-field purchase-batch-field">
+      <label>
+        <span>本次货拉拉价格</span>
+        <input v-model="batchFreight" type="number" min="0" step="0.01" placeholder="例如 58.00" />
+      </label>
+    </div>
+
+    <div class="item-list">
+      <div v-for="(row, index) in purchaseRows" :key="row.key" class="purchase-row flat-subpanel">
+        <label>
+          <span>类目</span>
+          <select v-model="row.category">
+            <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
+          </select>
+        </label>
+        <label>
+          <span>品名</span>
+          <input v-model="row.name" type="text" maxlength="50" placeholder="请输入品名" />
+        </label>
+        <label>
+          <span>原价</span>
+          <input v-model="row.originalPrice" type="number" min="0" step="0.01" placeholder="0.00" />
+        </label>
+        <label>
+          <span>折扣比例</span>
+          <input v-model="row.discountRate" type="number" min="0" max="1" step="0.001" placeholder="0.885" />
+        </label>
+        <label>
+          <span>库存数量</span>
+          <input v-model="row.quantity" type="number" min="1" step="1" placeholder="1" />
+        </label>
+        <button class="danger-btn" type="button" @click="removePurchaseRow(index)">
+          <span class="btn-icon">-</span>
+          <span>删除</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-actions form-actions-separated">
+      <button class="primary-btn" type="button" @click="submitPurchase">
+        <span class="btn-icon">></span>
+        <span>确认进货入仓</span>
+      </button>
+    </div>
+  </section>
+  </div>
+</template>
