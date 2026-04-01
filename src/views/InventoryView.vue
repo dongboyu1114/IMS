@@ -69,9 +69,9 @@ const pager = usePagination(inventoryProducts)
                 <td><input v-model="item.discountRate" type="number" min="0" max="1" step="0.001" /></td>
                 <td>{{ formatMoney(item.originalPrice * item.discountRate) }}</td>
                 <td><input v-model="item.quantity" type="number" min="1" step="1" /></td>
-                <td>{{ item.remainingQuantity }}</td>
-                <td>{{ formatMoney(item.batchFreightShare) }}</td>
-                <td>{{ formatDateTime(item.stockedAt) }}</td>
+                <td><input v-model="item.remainingQuantity" type="number" min="0" step="1" /></td>
+                <td><input v-model="item.batchFreightShare" type="number" min="0" step="0.01" /></td>
+                <td><input v-model="item.stockedAt" type="datetime-local" step="60" /></td>
                 <td class="action-cell action-cell-icons">
                   <button class="primary-btn small-btn" type="button" @click="saveEdit(item)"><span class="btn-icon">S</span><span>保存</span></button>
                   <button class="secondary-btn small-btn" type="button" @click="cancelEdit"><span class="btn-icon">R</span><span>取消</span></button>

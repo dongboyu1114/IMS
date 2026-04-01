@@ -326,12 +326,29 @@ function saveEdit(item) {
     alert('库存数量必须为正整数。')
     return false
   }
+  if (!Number.isInteger(Number(item.remainingQuantity)) || Number(item.remainingQuantity) < 0) {
+    alert('剩余数量必须为 0 或正整数。')
+    return false
+  }
+  if (Number(item.remainingQuantity) > Number(item.quantity)) {
+    alert('剩余数量不能大于库存数量。')
+    return false
+  }
+  if (Number(item.batchFreightShare) < 0) {
+    alert('货拉拉分摊不能小于 0。')
+    return false
+  }
+  if (!item.stockedAt || Number.isNaN(new Date(item.stockedAt).getTime())) {
+    alert('入库时间格式不正确。')
+    return false
+  }
 
-  const shippedQuantity = item.quantity - item.remainingQuantity
   item.quantity = Number(item.quantity)
-  item.remainingQuantity = Math.max(item.quantity - shippedQuantity, 0)
+  item.remainingQuantity = Number(item.remainingQuantity)
   item.originalPrice = Number(item.originalPrice)
   item.discountRate = Number(item.discountRate)
+  item.batchFreightShare = Number(item.batchFreightShare)
+  item.stockedAt = new Date(item.stockedAt).toISOString()
   item.purchasePrice = item.originalPrice * item.discountRate
   editingId.value = ''
   return true
