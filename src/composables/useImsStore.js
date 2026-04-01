@@ -12,6 +12,7 @@ const productTemplates = ref([])
 const shippingFee = ref('')
 const selectedPendingIds = ref([])
 const batchFreight = ref('')
+const batchStockedAt = ref(createCurrentDateTimeInputValue())
 const editingId = ref('')
 const isStoreReady = ref(false)
 let saveTimer = null
@@ -106,6 +107,14 @@ function createPurchaseRow() {
 function resetPurchaseRows() {
   purchaseRows.value = [createPurchaseRow()]
   batchFreight.value = ''
+  batchStockedAt.value = createCurrentDateTimeInputValue()
+}
+
+function createCurrentDateTimeInputValue() {
+  const now = new Date()
+  const offset = now.getTimezoneOffset()
+  const localTime = new Date(now.getTime() - offset * 60 * 1000)
+  return localTime.toISOString().slice(0, 16)
 }
 
 function validateDiscount(value) {
@@ -227,8 +236,13 @@ function deleteProductTemplate(id) {
 
 function submitPurchase() {
   const freight = Number(batchFreight.value)
+  const stockedAt = batchStockedAt.value ? new Date(batchStockedAt.value).toISOString() : ''
   if (Number.isNaN(freight) || freight < 0) {
     alert('请输入有效的货拉拉价格。')
+    return false
+  }
+  if (!stockedAt || Number.isNaN(new Date(stockedAt).getTime())) {
+    alert('请输入有效的进货时间。')
     return false
   }
 
@@ -258,7 +272,6 @@ function submitPurchase() {
     }
   }
 
-  const stockedAt = new Date().toISOString()
   const freightShare = rows.length ? freight / rows.length : 0
 
   rows.forEach((row) => {
@@ -431,6 +444,7 @@ export function useImsStore() {
     isStoreReady,
     selectedPendingIds,
     batchFreight,
+    batchStockedAt,
     editingId,
     filters,
     purchaseRows,

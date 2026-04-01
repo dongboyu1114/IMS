@@ -347,6 +347,12 @@ label {
   margin-bottom: 18px;
 }
 
+.purchase-batch-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 360px) minmax(220px, 320px);
+  gap: 14px;
+}
+
 .single-field {
   max-width: 360px;
 }
@@ -827,6 +833,7 @@ tbody tr:hover {
   .detail-summary-grid,
   .template-manager-grid,
   .filters-grid-flat,
+  .purchase-batch-grid,
   .purchase-row,
   .shipment-toolbar-flat {
     grid-template-columns: 1fr;

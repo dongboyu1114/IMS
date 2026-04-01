@@ -5,6 +5,7 @@ import PageHeader from '../components/PageHeader.vue'
 const {
   categories,
   batchFreight,
+  batchStockedAt,
   purchaseRows,
   productTemplates,
   addPurchaseRow,
@@ -38,10 +39,14 @@ const {
       </div>
     </div>
 
-    <div class="shared-fields single-field purchase-batch-field">
+    <div class="shared-fields purchase-batch-grid purchase-batch-field">
       <label>
         <span>本次货拉拉价格</span>
         <input v-model="batchFreight" type="number" min="0" step="0.01" placeholder="例如 58.00" />
+      </label>
+      <label>
+        <span>进货时间</span>
+        <input v-model="batchStockedAt" type="datetime-local" />
       </label>
     </div>
 
