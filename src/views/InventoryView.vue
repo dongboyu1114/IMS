@@ -1,11 +1,13 @@
 <script setup>
+import { computed } from 'vue'
 import { formatDateTime, formatMoney } from '../utils/ims'
 import { useImsStore } from '../composables/useImsStore'
 import PageHeader from '../components/PageHeader.vue'
 import PaginationBar from '../components/PaginationBar.vue'
 
 const { categories, filters, filteredProducts, editingId, startEdit, cancelEdit, saveEdit, deleteProduct, usePagination } = useImsStore()
-const pager = usePagination(filteredProducts)
+const inventoryProducts = computed(() => filteredProducts.value.filter((item) => item.remainingQuantity > 0))
+const pager = usePagination(inventoryProducts)
 </script>
 
 <template>
@@ -13,7 +15,7 @@ const pager = usePagination(filteredProducts)
   <PageHeader
     eyebrow="Inventory"
     title="库存列表"
-    description="查看并编辑当前库存、筛选状态和搜索商品。"
+    description="查看并编辑当前仍有剩余库存的商品。"
     :breadcrumb="['首页', '库存列表']"
   />
 
@@ -37,20 +39,12 @@ const pager = usePagination(filteredProducts)
           <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
         </select>
       </label>
-      <label>
-        <span>筛选状态</span>
-        <select v-model="filters.status">
-          <option value="all">全部状态</option>
-          <option value="pending">待发货</option>
-          <option value="shipped">已发完</option>
-        </select>
-      </label>
     </div>
 
-    <div v-if="!filteredProducts.length" class="empty-state flat-empty-state">
+    <div v-if="!inventoryProducts.length" class="empty-state flat-empty-state">
       <div class="empty-illustration"><span></span><span></span><span></span></div>
-      <h3>暂无匹配商品</h3>
-      <p>调整搜索条件或先在进货入仓页面添加商品。</p>
+      <h3>暂无库存商品</h3>
+      <p>当前没有剩余库存商品，可调整搜索条件或先在进货入仓页面添加商品。</p>
     </div>
 
     <template v-else>
