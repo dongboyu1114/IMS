@@ -496,6 +496,14 @@ label {
   column-gap: 14px;
 }
 
+.shipment-toolbar-time-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) minmax(220px, 320px) auto;
+  justify-content: start;
+  align-items: end;
+  column-gap: 14px;
+}
+
 .toolbar-btn {
   align-self: end;
 }
@@ -835,6 +843,7 @@ tbody tr:hover {
   .filters-grid-flat,
   .purchase-batch-grid,
   .purchase-row,
+  .shipment-toolbar-time-grid,
   .shipment-toolbar-flat {
     grid-template-columns: 1fr;
   }

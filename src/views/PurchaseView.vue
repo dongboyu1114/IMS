@@ -46,7 +46,7 @@ const {
       </label>
       <label>
         <span>进货时间</span>
-        <input v-model="batchStockedAt" type="datetime-local" />
+        <input v-model="batchStockedAt" type="datetime-local" step="60" />
       </label>
     </div>
 

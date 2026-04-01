@@ -4,7 +4,7 @@ import { useImsStore } from '../composables/useImsStore'
 import PageHeader from '../components/PageHeader.vue'
 import PaginationBar from '../components/PaginationBar.vue'
 
-const { shippingFee, pendingProducts, isStoreReady, selectedPendingIds, togglePending, shipSelected, usePagination } = useImsStore()
+const { shippingFee, batchShippedAt, pendingProducts, isStoreReady, selectedPendingIds, togglePending, shipSelected, usePagination } = useImsStore()
 const pager = usePagination(pendingProducts)
 </script>
 
@@ -13,7 +13,7 @@ const pager = usePagination(pendingProducts)
   <PageHeader
     eyebrow="Pending"
     title="待发货"
-    description="勾选待发货商品并填写本次物流价格完成发货。"
+    description="勾选待发货商品并填写本次物流价格、发货时间完成发货。"
     :breadcrumb="['首页', '待发货']"
   />
 
@@ -25,10 +25,14 @@ const pager = usePagination(pendingProducts)
       </div>
     </div>
 
-    <div class="shipment-toolbar shipment-toolbar-flat compact-spacing">
+    <div class="shipment-toolbar shipment-toolbar-time-grid compact-spacing">
       <label>
         <span>本次物流价格</span>
         <input v-model="shippingFee" type="number" min="0" step="0.01" placeholder="例如 12.00" />
+      </label>
+      <label>
+        <span>发货时间</span>
+        <input v-model="batchShippedAt" type="datetime-local" step="60" />
       </label>
       <button class="primary-btn toolbar-btn" type="button" @click="shipSelected">
         <span class="btn-icon">></span>

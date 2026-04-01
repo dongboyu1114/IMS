@@ -10,6 +10,7 @@ const products = ref(persisted.products)
 const shipments = ref(persisted.shipments)
 const productTemplates = ref([])
 const shippingFee = ref('')
+const batchShippedAt = ref(createCurrentDateTimeInputValue())
 const selectedPendingIds = ref([])
 const batchFreight = ref('')
 const batchStockedAt = ref(createCurrentDateTimeInputValue())
@@ -108,6 +109,11 @@ function resetPurchaseRows() {
   purchaseRows.value = [createPurchaseRow()]
   batchFreight.value = ''
   batchStockedAt.value = createCurrentDateTimeInputValue()
+}
+
+function resetShippingFields() {
+  shippingFee.value = ''
+  batchShippedAt.value = createCurrentDateTimeInputValue()
 }
 
 function createCurrentDateTimeInputValue() {
@@ -361,8 +367,13 @@ function shipSelected() {
   }
 
   const fee = Number(shippingFee.value)
+  const shippedAt = batchShippedAt.value ? new Date(batchShippedAt.value).toISOString() : ''
   if (Number.isNaN(fee) || fee < 0) {
     alert('请输入有效的物流价格。')
+    return false
+  }
+  if (!shippedAt || Number.isNaN(new Date(shippedAt).getTime())) {
+    alert('请输入有效的发货时间。')
     return false
   }
 
@@ -372,7 +383,6 @@ function shipSelected() {
     return false
   }
 
-  const shippedAt = new Date().toISOString()
   const shipmentId = createId('shipment')
   const snapshot = shipmentItems.map((item) => ({
     id: item.id,
@@ -413,7 +423,7 @@ function shipSelected() {
   })
 
   selectedPendingIds.value = []
-  shippingFee.value = ''
+  resetShippingFields()
   return true
 }
 
@@ -441,6 +451,7 @@ export function useImsStore() {
     shipments,
     productTemplates,
     shippingFee,
+    batchShippedAt,
     isStoreReady,
     selectedPendingIds,
     batchFreight,
