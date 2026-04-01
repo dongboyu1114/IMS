@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import DashboardView from '../views/DashboardView.vue'
 import PurchaseView from '../views/PurchaseView.vue'
@@ -8,7 +8,7 @@ import ShippedView from '../views/ShippedView.vue'
 import ShipmentDetailView from '../views/ShipmentDetailView.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: [
     {
       path: '/',
