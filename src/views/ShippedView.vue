@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { exportShipmentExcel, formatDateTime, formatMoney } from '../utils/ims'
 import { useImsStore } from '../composables/useImsStore'
@@ -8,6 +9,27 @@ import PaginationBar from '../components/PaginationBar.vue'
 const router = useRouter()
 const { sortedShipments, isStoreReady, usePagination } = useImsStore()
 const pager = usePagination(sortedShipments)
+
+const shipmentCostMap = computed(() => {
+  return new Map(
+    sortedShipments.value.map((shipment) => {
+      const logisticsShare = shipment.items.length ? Number(shipment.shippingFee) / shipment.items.length : 0
+      const totalCost = shipment.items.reduce((sum, item) => {
+        const goodsCost = Number(item.purchasePrice) * Number(item.shippedQuantity)
+        const freightCost = Number(item.batchFreightShare)
+        return sum + goodsCost + freightCost + logisticsShare
+      }, 0)
+
+      return [shipment.id, totalCost]
+    }),
+  )
+})
+
+function getShipmentAverageUnitCost(shipment) {
+  const totalQuantity = shipment.items.reduce((sum, item) => sum + Number(item.shippedQuantity || 0), 0)
+  const totalCost = shipmentCostMap.value.get(shipment.id) || 0
+  return totalQuantity ? totalCost / totalQuantity : 0
+}
 
 function goToShipmentDetail(id) {
   router.push({ name: 'shipment-detail', params: { id } })
@@ -45,12 +67,14 @@ function goToShipmentDetail(id) {
     <template v-else>
       <div class="table-wrap flat-table-wrap">
         <table>
-          <thead><tr><th>发货时间</th><th>物流价格</th><th>商品数量</th><th>发货清单</th><th>操作</th></tr></thead>
+          <thead><tr><th>发货时间</th><th>物流价格</th><th>商品数量</th><th>单件总成本</th><th>总成本</th><th>发货清单</th><th>操作</th></tr></thead>
           <tbody>
             <tr v-for="shipment in pager.paginated.value" :key="shipment.id" class="shipment-row" @click="goToShipmentDetail(shipment.id)">
               <td>{{ formatDateTime(shipment.shippedAt) }}</td>
               <td>{{ formatMoney(shipment.shippingFee) }}</td>
               <td>{{ shipment.items.length }}</td>
+              <td>{{ formatMoney(getShipmentAverageUnitCost(shipment)) }}</td>
+              <td>{{ formatMoney(shipmentCostMap.get(shipment.id) || 0) }}</td>
               <td class="shipment-summary-cell">
                 <div class="shipment-summary-list">
                   <span v-for="item in shipment.items" :key="`${shipment.id}-${item.id}`" class="shipment-summary-tag">

@@ -57,7 +57,7 @@ const pager = usePagination(inventoryProducts)
         <table>
           <thead>
             <tr>
-              <th>类目</th><th>品名</th><th>原价</th><th>折扣</th><th>进货价</th><th>库存数量</th><th>剩余数量</th><th>货拉拉分摊</th><th>入库时间</th><th>操作</th>
+              <th>类目</th><th>品名</th><th>原价</th><th>折扣</th><th>进货价</th><th>库存数量</th><th>剩余数量</th><th>货拉拉分摊</th><th>单件总成本</th><th>总成本</th><th>入库时间</th><th>操作</th>
             </tr>
           </thead>
           <tbody>
@@ -71,6 +71,8 @@ const pager = usePagination(inventoryProducts)
                 <td><input v-model="item.quantity" type="number" min="1" step="1" /></td>
                 <td><input v-model="item.remainingQuantity" type="number" min="0" step="1" /></td>
                 <td><input v-model="item.batchFreightShare" type="number" min="0" step="0.01" /></td>
+                <td>{{ formatMoney(item.remainingQuantity ? item.purchasePrice + Number(item.batchFreightShare) / Number(item.remainingQuantity) : 0) }}</td>
+                <td>{{ formatMoney(item.purchasePrice * item.remainingQuantity + Number(item.batchFreightShare)) }}</td>
                 <td><input v-model="item.stockedAt" type="datetime-local" step="60" /></td>
                 <td class="action-cell action-cell-icons">
                   <button class="primary-btn small-btn" type="button" @click="saveEdit(item)"><span class="btn-icon">S</span><span>保存</span></button>
@@ -86,6 +88,8 @@ const pager = usePagination(inventoryProducts)
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.remainingQuantity }}</td>
                 <td>{{ formatMoney(item.batchFreightShare) }}</td>
+                <td>{{ formatMoney(item.remainingQuantity ? item.purchasePrice + Number(item.batchFreightShare) / Number(item.remainingQuantity) : 0) }}</td>
+                <td>{{ formatMoney(item.purchasePrice * item.remainingQuantity + Number(item.batchFreightShare)) }}</td>
                 <td>{{ formatDateTime(item.stockedAt) }}</td>
                 <td class="action-cell action-cell-icons">
                   <button class="secondary-btn small-btn" type="button" @click="startEdit(item)"><span class="btn-icon">E</span><span>编辑</span></button>
