@@ -1,8 +1,10 @@
 import { computed, reactive, ref, watch } from 'vue'
-import { categories, createId, loadState, saveState } from '../utils/ims'
+import { categories, createId } from '../utils/ims'
+import { supabase } from '../lib/supabase'
 
 const PAGE_SIZE = 6
-const persisted = loadState()
+const persisted = { products: [], shipments: [] }
+const STATE_ROW_ID = 'main'
 
 const products = ref(persisted.products)
 const shipments = ref(persisted.shipments)
@@ -10,6 +12,8 @@ const shippingFee = ref('')
 const selectedPendingIds = ref([])
 const batchFreight = ref('')
 const editingId = ref('')
+const isStoreReady = ref(false)
+let saveTimer = null
 const filters = reactive({
   keyword: '',
   category: '',
@@ -20,10 +24,68 @@ const purchaseRows = ref([createPurchaseRow()])
 watch(
   [products, shipments],
   () => {
-    saveState(products.value, shipments.value)
+    if (!isStoreReady.value) {
+      return
+    }
+
+    clearTimeout(saveTimer)
+    saveTimer = window.setTimeout(() => {
+      persistState()
+    }, 250)
   },
   { deep: true },
 )
+
+async function loadRemoteState() {
+  const { data, error } = await supabase
+    .from('app_state')
+    .select('products, shipments')
+    .eq('id', STATE_ROW_ID)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Failed to load app_state from Supabase:', error)
+    return
+  }
+
+  if (!data) {
+    const { error: insertError } = await supabase.from('app_state').insert({
+      id: STATE_ROW_ID,
+      products: [],
+      shipments: [],
+    })
+
+    if (insertError) {
+      console.error('Failed to initialize app_state row:', insertError)
+    }
+
+    products.value = []
+    shipments.value = []
+    isStoreReady.value = true
+    return
+  }
+
+  products.value = Array.isArray(data.products) ? data.products : []
+  shipments.value = Array.isArray(data.shipments) ? data.shipments : []
+  isStoreReady.value = true
+}
+
+async function persistState() {
+  const { error } = await supabase
+    .from('app_state')
+    .upsert({
+      id: STATE_ROW_ID,
+      products: products.value,
+      shipments: shipments.value,
+      updated_at: new Date().toISOString(),
+    })
+
+  if (error) {
+    console.error('Failed to persist app_state to Supabase:', error)
+  }
+}
+
+loadRemoteState()
 
 function createPurchaseRow() {
   return {
@@ -297,6 +359,7 @@ export function useImsStore() {
     products,
     shipments,
     shippingFee,
+    isStoreReady,
     selectedPendingIds,
     batchFreight,
     editingId,

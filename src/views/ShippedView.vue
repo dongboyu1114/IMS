@@ -6,7 +6,7 @@ import PageHeader from '../components/PageHeader.vue'
 import PaginationBar from '../components/PaginationBar.vue'
 
 const router = useRouter()
-const { sortedShipments, usePagination } = useImsStore()
+const { sortedShipments, isStoreReady, usePagination } = useImsStore()
 const pager = usePagination(sortedShipments)
 
 function goToShipmentDetail(id) {
@@ -31,7 +31,12 @@ function goToShipmentDetail(id) {
       </div>
     </div>
 
-    <div v-if="!sortedShipments.length" class="empty-state flat-empty-state">
+    <div v-if="!isStoreReady" class="empty-state flat-empty-state">
+      <h3>数据加载中</h3>
+      <p>正在从云端读取发货记录，请稍候。</p>
+    </div>
+
+    <div v-else-if="!sortedShipments.length" class="empty-state flat-empty-state">
       <div class="empty-illustration"><span></span><span></span><span></span></div>
       <h3>暂无发货记录</h3>
       <p>勾选待发货商品并发货后，这里会展示每一条发货记录。</p>

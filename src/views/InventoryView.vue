@@ -5,7 +5,7 @@ import { useImsStore } from '../composables/useImsStore'
 import PageHeader from '../components/PageHeader.vue'
 import PaginationBar from '../components/PaginationBar.vue'
 
-const { categories, filters, filteredProducts, editingId, startEdit, cancelEdit, saveEdit, deleteProduct, usePagination } = useImsStore()
+const { categories, filters, filteredProducts, editingId, isStoreReady, startEdit, cancelEdit, saveEdit, deleteProduct, usePagination } = useImsStore()
 const inventoryProducts = computed(() => filteredProducts.value.filter((item) => item.remainingQuantity > 0))
 const pager = usePagination(inventoryProducts)
 </script>
@@ -41,7 +41,12 @@ const pager = usePagination(inventoryProducts)
       </label>
     </div>
 
-    <div v-if="!inventoryProducts.length" class="empty-state flat-empty-state">
+    <div v-if="!isStoreReady" class="empty-state flat-empty-state">
+      <h3>数据加载中</h3>
+      <p>正在从云端读取库存数据，请稍候。</p>
+    </div>
+
+    <div v-else-if="!inventoryProducts.length" class="empty-state flat-empty-state">
       <div class="empty-illustration"><span></span><span></span><span></span></div>
       <h3>暂无库存商品</h3>
       <p>当前没有剩余库存商品，可调整搜索条件或先在进货入仓页面添加商品。</p>

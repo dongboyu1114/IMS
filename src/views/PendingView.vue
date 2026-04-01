@@ -4,7 +4,7 @@ import { useImsStore } from '../composables/useImsStore'
 import PageHeader from '../components/PageHeader.vue'
 import PaginationBar from '../components/PaginationBar.vue'
 
-const { shippingFee, pendingProducts, selectedPendingIds, togglePending, shipSelected, usePagination } = useImsStore()
+const { shippingFee, pendingProducts, isStoreReady, selectedPendingIds, togglePending, shipSelected, usePagination } = useImsStore()
 const pager = usePagination(pendingProducts)
 </script>
 
@@ -36,7 +36,12 @@ const pager = usePagination(pendingProducts)
       </button>
     </div>
 
-    <div v-if="!pendingProducts.length" class="empty-state flat-empty-state">
+    <div v-if="!isStoreReady" class="empty-state flat-empty-state">
+      <h3>数据加载中</h3>
+      <p>正在从云端读取待发货数据，请稍候。</p>
+    </div>
+
+    <div v-else-if="!pendingProducts.length" class="empty-state flat-empty-state">
       <div class="empty-illustration empty-illustration-compact"><span></span><span></span><span></span></div>
       <h3>暂无待发货商品</h3>
       <p>完成进货入仓后，待发货商品会显示在这里。</p>
