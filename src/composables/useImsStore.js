@@ -136,6 +136,12 @@ function validateDiscount(value) {
 const stats = computed(() => {
   const pending = products.value.filter((item) => item.remainingQuantity > 0)
   const totalRemaining = pending.reduce((sum, item) => sum + item.remainingQuantity, 0)
+  const inventoryOriginalAmount = pending.reduce((sum, item) => {
+    return sum + Number(item.originalPrice) * Number(item.remainingQuantity)
+  }, 0)
+  const inventoryFreightAmount = pending.reduce((sum, item) => {
+    return sum + Number(item.batchFreightShare)
+  }, 0)
   const inventoryCostAmount = pending.reduce((sum, item) => {
     const goodsCost = Number(item.purchasePrice) * Number(item.remainingQuantity)
     const freightShareCost = Number(item.batchFreightShare)
@@ -143,11 +149,13 @@ const stats = computed(() => {
   }, 0)
 
   return {
-    productCount: products.value.length,
-    pendingCount: pending.length,
-    remainingCount: totalRemaining,
-    inventoryCostAmount,
-    shipmentCount: shipments.value.length,
+      productCount: products.value.length,
+      pendingCount: pending.length,
+      remainingCount: totalRemaining,
+      inventoryOriginalAmount,
+      inventoryFreightAmount,
+      inventoryCostAmount,
+      shipmentCount: shipments.value.length,
   }
 })
 

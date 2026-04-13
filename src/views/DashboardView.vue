@@ -26,6 +26,14 @@ const { stats } = useImsStore()
           <strong>{{ stats.pendingCount }}</strong>
         </article>
         <article class="stat-card flat-card">
+          <span>库存总原价</span>
+          <strong>{{ formatMoney(stats.inventoryOriginalAmount) }}</strong>
+        </article>
+        <article class="stat-card flat-card">
+          <span>库存货拉拉总成本</span>
+          <strong>{{ formatMoney(stats.inventoryFreightAmount) }}</strong>
+        </article>
+        <article class="stat-card flat-card">
           <span>库存总成本金额</span>
           <strong>{{ formatMoney(stats.inventoryCostAmount) }}</strong>
         </article>
